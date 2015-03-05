@@ -1,0 +1,90 @@
+% !TeX spellcheck = sv_SE
+\section{Numeriska metoder}
+\label{sec:metoder}
+
+\begin{figure}
+	\centering
+	\resizebox{\textwidth}{!}{
+		\begin{tikzpicture}[node distance=4cm, auto]
+		\node [block](init) {Initialize model \\*
+			$t \leftarrow t_0$ \\*
+			$x \leftarrow x_0$};
+		\node [block, right of=init] (timestep) {Roll for inter reaction time $\tau$};
+		\node [block, right of=timestep] (reaction) {Roll for reaction $r$};
+		\node [block, right of=reaction] (execute) {Carry out reaction \\*
+			$x \leftarrow x + n_r$ };
+		\node [block, right of=execute] (increase) {Update time \\*
+			$t \leftarrow t + \tau$};
+		\node [decision, right of=increase] (condition) {Check \\*
+			$t < t_\mathrm{final}$};
+		\node [block, right of=condition] (done) {Done};
+		\coordinate [below of=condition] (null);
+		
+		
+		\draw [-latex'] (init) -- (timestep);
+		\draw [-latex'] (timestep) -- (reaction);
+		\draw [-latex'] (reaction) -- (execute);
+		\draw [-latex'] (execute) -- (increase);
+		\draw [-latex'] (increase) -- (condition);
+		\draw [-latex'] (condition) -- node [above] {False} (done);
+		\draw [-latex'] (condition) -- node [right] {True} (null) -| (timestep);
+		
+		\end{tikzpicture}
+	}
+	\caption{Schematisk beskrivning av \emph{Gillespies algoritm}. I varje steg slumpas ett tidssteg $\tau \sim \exp(\beta)$ och en reaktion $r$ viktat efter deras propensiteter. Slutligen uppdateras tiden $t$ och tillståndet $x$.}
+	\label{fig:gill}
+\end{figure}
+
+Till skillnad från \textsc{miniprojekt 1} där vi med ordinära
+differentialekvationer arbetade deterministiskt, använde vi nu en
+stokastisk metod. Detta krävde dock en omskrivning av den matematiska
+modellen (se avsnitt 2).
+
+Den ursprungliga kontinuerliga och deterministiska metoden baserades på
+lösning av differentialekvationer som beskrev koncentrationen av de intressanta
+partiklarna. Detta antar att antalet partiklar är stort så att koncentrationen
+är approximativt kontinuerlig. I en cell är dock det antagandet svårt att
+motivera, ty antalet av varje partikel kan finnas i endast ett fåtal exemplar.
+
+Vi använde instället den diskreta och stokastiska \emph{Gillespies algoritm}. En beskrivning av algoritmen ses i figur~\ref{fig:gill}. Nu arbetar vi
+direkt med partiklars antal istället för koncentrationer, och istället för
+reaktionshastigheter har vi sannolikheter (propensiteter) för varje reaktion.
+
+\subsection{Hitta tiden till nästa reaktion}
+
+Först initierar vi vårt tillstånd med initialvärden för tiden $t$ (\lstinline|t|) och tillståndet $x$ (\lstinline|x|) enligt avsnitt~4. Sedan beräknar vi propensiteterna $w_r$ enligt \lstinline|w = prop_vilar(x, b)| där \lstinline|b| är en parametervektor enligt avsnitt~4 och \lstinline|w| är en $18 \times 1$-kolumnvektor. Vi kan då beräkna summan $\beta$ som \lstinline|beta = sum(w)|.
+
+Sedan slumpar vi fram $\tau$ med hjälp av att invertera den kumulativa sannolikhetsfördelningen. Detta görs med ett slumptal $u_1 \sim U[0,1]$ enligt
+\begin{equation}
+\tau = \frac{-\ln u_1}{\beta} \, .
+\end{equation}
+Detta implementerar vi i matlab som
+\begin{lstlisting}
+u1 = rand;
+tau = -log(u1)/beta;
+\end{lstlisting}
+
+\subsection{Hitta nästa reaktion}
+
+Nästa steg är att uppdatera tillståndet, vilket betyder att vi måste ta reda på vilken reaktion som sker. Vi kan ta reda på sannolikheten för varje reaktion genom att dela propensitetsvektorn med den totala propensiteten \lstinline|w_norm = w./beta|. 
+
+Vi beräknar den kumulativa sannolikhestfördelningen (\textsc{cdf}) som\begin{lstlisting}
+w_cumsum = cumsum(w);
+w_cdf = [0; w_cumsum(w)];
+\end{lstlisting}
+Prefix-nollan är nödvändig för att varje reaktion skall företrädas av ett intervall. Eftersom summan är kumulativ kommer intervallet mellan två reaktioner vara sannolikheten för den senare reaktionen. Vi kan då ta ett likformigt slumptal $u_2 \sim U[0,1]$ och hitta intervallet det faller i. Detta implementerar vi som
+\begin{lstlisting}
+jfr = u2 < w_cdf;
+j = find(jfr);
+next = j(1)-1;
+\end{lstlisting}
+där olikheten utförs elementvis och ger en vektor av resultatet. Vi vet att det är falskt tills intervallet som $u_2$ faller i, och sant efteråt. Vi vill då hitta det första sanna elementet, och använder \lstinline|find| som returnerar de nollskiljda (sanna) elementen. Första elementet i \lstinline|j| är då den senare randpunkten av intervallet, vilket är reaktionen vi väljer. Dock måste vi kompensera för prefix-nollan och subtraherar då 1 från resultatet.
+
+Nu är det bara att uppdatera tillståndet genom att inkrementera $x$ med stökiometrivektorn $n_r$ för den valda reaktionen \lstinline|x = x + nr(next,:)|. Här är \lstinline|nr| vår stökiometrimatris där varje rad svarar mot en reaktion.
+
+\subsection{Avrunda lösningen i ett temporalt ``grid''}
+
+För att kontrollera mängden datapunkter använder vi \lstinline|linspace| för att definiera en tidsvektor \lstinline|T| med tider vi är intresserade av. Vi initierar även lika stora vektorer för $A$ och $R$.
+
+Under simulationen kontrollerar vi om vi har passerat en intressant tidpunkt och sparar resultaten i vektorerna för $A$ och $R$. Sedan inkrementerar vi index och väntar tills den passerar nästa tidpunkt av intresse. Med andra ord fortgår simuleringen som vanligt, men vi gör specifika urplock av data.
+

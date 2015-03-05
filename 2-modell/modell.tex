@@ -1,0 +1,9 @@
+% !TeX spellcheck = sv_SE
+\section{Matematisk modell}
+\label{sec:modell}
+
+Den cirkadiska rytmen utgörs av 18 reaktioner som beskrivs i ekvation~20 (sidan 21) i \cite{hellander}. Varje reaktion $r$ har en tillhörande propensitet $w_r$ som beskriver hur frekvent reaktionen är. Varje reaktion kan beskrivas algebraiskt som en differens $n_r$ som beskriver hur varje partikel förbrukas eller produceras.
+
+Propensiteterna $w_r$ är funktioner av tillståndet $x$. Givet $w_r$ för varje reaktion kan vi tala om den \emph{totala propensiteten} $\beta$ som är summan av varje enskild reaktions propensitet. Då kommer väntetiden mellan två reaktioner $\tau$ vara exponentialfördelad med parameter $\beta$.
+
+Om vi jämför med \textsc{miniprojekt 1} så har vi övergått från koncentration av ämnen och deras  till en diskret modell där varje reaktion har en viss sannolikhet att inträffa. Sannolikheten att reaktionen $r$ sker i intervallet $[t, t + \tau]$ är $w_r \beta^{-1}$.
