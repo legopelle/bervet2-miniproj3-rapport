@@ -2,11 +2,11 @@
 \section{Numeriska metoder}
 \label{sec:metoder}
 
-Vi kan lösa matrisekvationen \ref{eqn:ls} direkt i \textsc{matlab}, men när polynomgraden växer, kommer matrisen vi inverterar att bli mer och mer instabil. Detta kan motverkas genom att ortogonalisera den, vilket görs i \textsc{matlab}:s \lstinline|polyfit|. Våra mätvärden är också täta, vilket försvårar minsta-kvadratanpassningen. Men även det kan motverkas genom att centrera datan innan anpassning, vilket görs automatiskt av \lstinline|polyfit|.
+Vi kan lösa matrisekvationen \ref{eqn:ls} direkt i \textsc{matlab}, men när polynomgraden växer kommer matrisen vi inverterar att bli mer och mer instabil. Detta kan motverkas genom att ortogonalisera den, vilket görs i \textsc{matlab}:s \lstinline|polyfit|. Våra mätvärden är också täta, vilket försvårar minsta-kvadratanpassningen. Men även det kan motverkas genom att centrera datan innan anpassning, vilket görs automatiskt av \lstinline|polyfit|.
 
 Vår data behöver behandlas eftersom vissa datapunkter saknas. Dessa utmärks med att värdet är 0. Vi vill därför ta ut de nollskilda elementen med \lstinline|nz = find(data ~= 0)| vilket ger deras index. Vi har då vektorer med $x$ och $y$ värden för de datapunkter där $ y \neq 0$. Då gör vi en minsta-kvadratanpassning genom \lstinline|p = polyfit(x, y, M)| för polynom av grad \lstinline|M|.
 
-Vi kan då avtrendifiera datan genom att subtrahera trenden (det anpassade polynomet) från datan \lstinline|detrend = y - polyval(p,x)|. Sedan lägger vi tillbaka de avsaknade mätvärdena på samma sätt som innan och tar medelvärdet av varje månad. Koden nedan itererar först över varje månad, och sedan var 12:e element i datan. Den summerar i \lstinline|sum_months| om värdet är skiljt från 0. En räknare \lstinline|numval| håller reda på antalet termer i summan. 
+Vi kan då avtrendifiera datan genom att subtrahera trenden (det anpassade polynomet) från datan \lstinline|detrend = y - polyval(p,x)|. Sedan lägger vi tillbaka de avsaknade mätvärdena på samma sätt som innan och tar medelvärdet av varje månad. Koden nedan itererar först över varje månad, och sedan var 12:e element i datan. Den summerar i \lstinline|sum_months| om värdet är skiljt från 0. En räknare \lstinline|numval| håller reda på antalet termer i summan. \lstinline|N| är antalet ursprungliga datapunkter och \lstinline|mx_det| är den avtrendifierade datan (med nollor återinförda). 
 \begin{lstlisting}
 for i=1:12
     for j=i:12:N
@@ -17,7 +17,7 @@ for i=1:12
     end
 end
 
-months_avg = months ./ numval;
+months_avg = sum_months ./ numval;
 \end{lstlisting}
 
 \subsection{Val av polynomgrad}
@@ -27,6 +27,6 @@ Vi kan implementera ekvation \ref{eqn:kaw} som
 p = polyfit(x, y, N);
 res = y - polyval(p, x);
 sr = sum(res.^2);
-kaw = sr/(M - N - 1);
+var = sr/(M - N - 1);
 \end{lstlisting}
 för polynom av grad \lstinline|N| med antal datapunkter \lstinline|M|.

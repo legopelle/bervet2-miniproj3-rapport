@@ -2,60 +2,19 @@
 \section{Resultat}
 \label{sec:resultat}
 
-I figur~\ref{fig:n2o} ser vi resultatet av detrendifieringen och månadsvist medelvärde. Detrendifiereingen gjordes med ett polynom av grad 5.
+I figur~\ref{fig:n2o} ser vi resultatet av detrendifieringen och månadsvist medelvärde. Detrendifiereingen gjordes med ett polynom av grad 5 enligt resultat i figur~\ref{fig:deg} och grad 4 efter valet i \cite{ref:liao}.
 
 \begin{figure}[H]
     \centering
-    % This file was created by matlab2tikz.
-    % Minimal pgfplots version: 1.3
-    %
-    %The latest updates can be retrieved from
-    %  http://www.mathworks.com/matlabcentral/fileexchange/22022-matlab2tikz
-    %where you can also make suggestions and rate matlab2tikz.
-    %
-    \definecolor{mycolor1}{rgb}{0.00000,0.44700,0.74100}%
-    %
-    \begin{tikzpicture}
-    
-    \begin{axis}[%
-    width=0.95092\figurewidth,
-    height=\figureheight,
-    at={(0\figurewidth,0\figureheight)},
-    scale only axis,
-    xmin=1,
-    xmax=12,
-    xlabel={Månad},
-    ymin=-0.4,
-    ymax=0.6,
-    ylabel={Mängd \ce{N2O}},
-    title style={font=\bfseries},
-    title={Medelvärde av avtrendifierad \ce{N2O} under året}
-    ]
-    \addplot [color=mycolor1,solid,forget plot]
-    table[row sep=crcr]{%
-        1	0.502120971679691\\
-        2	0.364780560661767\\
-        3	-0.124172794117656\\
-        4	-0.0832117417279405\\
-        5	-0.0856789981617747\\
-        6	-0.127252197265634\\
-        7	-0.349581909179687\\
-        8	0.0542785644531243\\
-        9	0.323263549804697\\
-        10	-0.315832519531245\\
-        11	-0.217810058593752\\
-        12	0.067590332031255\\
-    };
-    \end{axis}
-    \end{tikzpicture}%
+    \input{nitro.tikz}
     \caption{Medelvärdet av varje månads nivå av \ce{N2O} beräknad från avtrendifierad data.}
     \label{fig:n2o}
 \end{figure}
 
 \begin{figure}[H]
     \centering
-    
-    \caption{Medelvärdet av varje månads nivå av \ce{N2O} beräknad från avtrendifierad data.}
+    \input{deg.tikz}
+    \caption{Variansen enligt ekvation~\ref{eqn:kaw}.}
     \label{fig:deg}
 \end{figure}
 

@@ -2,7 +2,7 @@
 \section{Matematisk modell}
 \label{sec:modell}
 
-Centralt i våran metod är en minsta-kvadratanpassning. Det är ett verktyg för att anpassa en funktion $f(x)$ med okända parametrar till mätdata $(x_i, y_i)$ på \emph{Bästa sätt}. I detta fall betyder \emph{bästa sätt} att kvadratsumman av residualerna $r$ minimeras. Residualerna $r_i$ definieras som skillnaden mellan datan $y_i$ och det framtagna funktionsvärdet $f(x_i)$ enligt
+Centralt i vår metod är en minsta-kvadratanpassning. Det är ett verktyg för att anpassa en funktion $f(x)$ med okända parametrar till mätdata $(x_i, y_i)$ på \emph{bästa sätt}. I detta fall betyder \emph{bästa sätt} att kvadratsumman av residualerna $r$ minimeras. Residualerna $r_i$ definieras som skillnaden mellan datan $y_i$ och det framtagna funktionsvärdet $f(x_i)$ enligt
 \begin{equation}
 r_i = y_i - f(x_i)
 \end{equation} 
@@ -11,11 +11,11 @@ I vårt fall vill vi anpassa ett polynom av grad $n$ till datan. Funktionen $f(x
 \begin{equation}
 f(x) = a_0 + a_1x + \dots a_n x^n
 \end{equation}
-och vi har därför $n$ parametrar att bestämma. Kvadratsumman av residualerna kan då skrivas som
+och vi har därför $n + 1$ parametrar att bestämma. Kvadratsumman av residualerna kan då skrivas som
 \begin{equation}
 F(\mathbf{a}) = \sum_{i} (y_i - f(x_i))^2 = \sum_i (y_i - (a_0 + a_1x_i + \dots + a_n x_i^n)^2
 \end{equation}
-Nödvändigt villkor för minimum är $\partial F/\partial a_j = 0$. Detta ger oss $n$ ekvationer för $n$ okända.
+Nödvändigt villkor för minimum är $\partial F/\partial a_j = 0$. Detta ger oss $n + 1$ ekvationer för $n + 1$ okända.
 \begin{align}
     \frac{\partial F}{\partial a_0} &= \sum_i \left[ 2(y_i - (a_0 + a_1x_i + \dots + a_n x_i^n))(-1) \right] = 0 \\
     \frac{\partial F}{\partial a_1} &= \sum_i \left[ 2(y_i - (a_0 + a_1x_i + \dots + a_n x_i^n))(-x_i) \right] = 0 \\
@@ -51,7 +51,7 @@ som är ett enkelt system och lätt att lösa.
 
 \subsection{Val av polynomgrad}
 
-Vi är fria att välja vilken grad av polynom vi vill, förutsatt att graden $n$ uppfyller $n <= m-1$ för antal datapunkter $m$. Vid likhet behövs ingen minsta-kvadratanpassning, utan lösningen är exakt.
+Vi är fria att välja vilken grad av polynom vi vill, förutsatt att graden $n$ uppfyller $n \leq m-1$ för antal datapunkter $m$. Vid likhet behövs ingen minsta-kvadratanpassning, utan lösningen är exakt.
 
 Enligt \cite{ref:kaw} bör vi välja den grad som minimerar variansen
 \begin{equation}

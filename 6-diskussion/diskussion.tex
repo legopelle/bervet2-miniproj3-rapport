@@ -2,6 +2,16 @@
 \section{Diskussion}
 \label{sec:diskussion}
 
-Om vi undersöker topparna i intervallet $t \in [0, 200h]$ så kan vi uppskatta periodtiden. För $\delta_R = 0.2$ ger detta ungefär 25h och för $\delta_R = 0.08$ ungefär 50h. Detta är rimligt då $\delta_R$ är proportionell mot R-proteinets nedbrytning. Om den bryts ner mer sällan avtar den långsammare och perioderna blir längre.
+Enligt \cite{ref:kaw} och figur~\ref{fig:deg} bör vi välja ett polynom av grad 5. Detta eftersom det minimerar variansen enligt ekvation~\ref{eqn:kaw} för gradtal upp till 6. I rapporten väljer de dock ett polynom av grad 4 till datan från norra halvklotet eftersom det liknar mycket polynomet av grad 5, och vi vill så långt vi kan välja ett lågt gradtal för att undvika överanpassning. Dock gjorde de ingen anpassning av datan från södra halvklotet eftersom felet blev för högt.
 
-I \textsc{miniprojekt 1} mättes $D_A$ och $D_R$ med koncentrationer (egentligen antal i enhetsvolymen), medan vi nu mätte direkt i antal. Koncentrationen antogs vara kontinuerlig så att ett differentialekvationssystem var rimligt. I detta projekt arbetade vi istället med diskreta antal och sannolikheter för enskilda reaktioner.
+Vi jämför de båda graderna för södra halvklotet i figur~\ref{fig:n2o}, vilket avslöjar att skillnaden även här är liten, och antagligen inom felmarginalen.
+
+När vi försökte anpassa datan med \lstinline|polyfit| fick vi en varning om att polynomet var dåligt konditionerat. Detta beror antagligen på att datapunkterna är täta och svåra att skilja på. Detta åtgärdas genom att anropa \lstinline|polyfit| på ett speciellt sätt:
+\begin{lstlisting}
+[p, ~, mu] = polyfit(x, y, M);
+\end{lstlisting}
+Detta skiftar ock skalar om datan så att konditionen blir bättre. Tecknet \lstinline|~| signalerar att vi inte behöver det andra elementet och \lstinline|mu| innehåller information om skalningen och skiftningen. Haken är att vi även måste ändra hur vi anropar \lstinline|polyval|:
+\begin{lstlisting}
+f = polyval(p, x, [], mu);
+\end{lstlisting}
+Tredje argumentet är relaterat till elementet vi ignorerade med \lstinline|~| ovan.
